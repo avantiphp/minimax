@@ -1,0 +1,87 @@
+name: Build and Sign PWA APK
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      manifest_url:
+        description: 'URL completa do manifest.json da PWA'
+        required: true
+        default: 'https://paginaon.imbituva.com/manifest.json'
+      package_name:
+        description: 'Application ID (ex: com.imbituva.paginaon)'
+        required: true
+        default: 'com.imbituva.paginaon'
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Configurar Java JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Instalar Bubblewrap CLI
+        run: npm install -g @bubblewrap/cli
+
+      - name: Restaurar Android Keystore dos Secrets
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > release.keystore
+
+      - name: Configurar Bubblewrap e aceitar licenças do Android SDK
+        env:
+          MANIFEST_URL: ${{ github.event.inputs.manifest_url || 'https://paginaon.imbituva.com/manifest.json' }}
+          PACKAGE_NAME: ${{ github.event.inputs.package_name || 'com.imbituva.paginaon' }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          mkdir -p twa-build
+          cd twa-build
+          
+          # Inicializa o Bubblewrap automaticamente baixando JDK/SDK se necessário e gerando o twa-manifest.json
+          yes | bubblewrap init --manifest="$MANIFEST_URL" \
+            --directory=. \
+            --packageId="$PACKAGE_NAME" \
+            --signingKey.path="../release.keystore" \
+            --signingKey.alias="$KEY_ALIAS"
+
+      - name: Compilar e Assinar o APK
+        env:
+          BUBBLEWRAP_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          BUBBLEWRAP_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          cd twa-build
+          bubblewrap build --skipPwaValidation
+
+      - name: Mover APK gerado para a raiz e limpar keystore temporária
+        run: |
+          cp twa-build/app-release-signed.apk ./app-release.apk
+          rm -f release.keystore
+
+      - name: Upload do APK como Artefato da Action
+        uses: actions/upload-artifact@v4
+        with:
+          name: pwa-signed-apk
+          path: app-release.apk
+          retention-days: 30
+
+      - name: Commit automático do APK no repositório (Opcional)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add app-release.apk
+          git commit -m "build: atualiza app-release.apk [skip ci]" || exit 0
+          git push
