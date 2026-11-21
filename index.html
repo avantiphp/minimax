@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#013A7C">
+<meta name="description" content="Imbituva — aplicativo oficial com funciona mesmo offline.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Imbituva">
+<title>Imbituva</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16.png">
+<link rel="icon" type="image/svg+xml" href="icons/favicon.svg">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<style>
+:root{
+  color-scheme:light;
+  --navy:#013A7C;--navy-2:#023E86;--navy-deep:#012B64;
+  --ink:#000E22;--muted:#49505A;--blue:#0157BE;--gray:#8A8E93;--amber:#F0CA77;
+  --bg-top:#F7F8FC;--bg-bottom:#EFF2F7;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  margin:0;background:linear-gradient(180deg,var(--bg-top) 0%,#F2F4F9 45%,var(--bg-bottom) 100%);
+  color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  display:flex;flex-direction:column;min-height:100vh;min-height:100dvh;
+}
+.screen{flex:1 1 auto;display:flex;flex-direction:column;max-width:560px;width:100%;margin:0 auto;padding:36px 20px 24px}
+.header{display:flex;align-items:center;gap:14px}
+.mark{width:56px;height:56px;border-radius:50%;padding:3px;background:var(--amber);box-shadow:0 10px 22px rgba(9,32,72,.16);flex:0 0 auto}
+.mark svg{width:100%;height:100%;display:block;border-radius:50%}
+h1{margin:0;font-size:23px;font-weight:800;letter-spacing:-.01em;color:var(--ink)}
+.sub{margin:2px 0 0;font-size:13px;color:var(--muted)}
+.cards{margin-top:26px;display:flex;flex-direction:column;gap:12px}
+.card{background:#fff;border-radius:16px;padding:16px 18px;box-shadow:0 8px 24px rgba(9,32,72,.07);display:flex;align-items:center;gap:14px}
+.card .txt{flex:1 1 auto;min-width:0}
+.card h2{margin:0;font-size:15px;font-weight:700}
+.card p{margin:3px 0 0;font-size:13px;color:var(--muted);line-height:1.45}
+.dot{width:10px;height:10px;border-radius:50%;background:#e11d48;flex:0 0 auto}
+.dot.on{background:#16a34a}
+.dot.wait{background:#f59e0b}
+.badge{display:inline-flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);margin-top:4px}
+.btn{
+  appearance:none;border:0;cursor:pointer;font:inherit;font-size:15px;font-weight:700;color:#fff;
+  padding:14px 20px;border-radius:12px;background:linear-gradient(180deg,var(--navy-2),var(--navy-deep));
+  box-shadow:0 12px 26px rgba(1,35,80,.24);width:100%;margin-top:18px;display:none;
+}
+.btn.show{display:block}
+.tabbar{
+  flex:0 0 auto;background:#fff;border-radius:26px 26px 0 0;box-shadow:0 -10px 30px rgba(9,32,72,.08);
+  padding:14px 8px calc(14px + env(safe-area-inset-bottom));display:flex;align-items:stretch;justify-content:space-around;
+}
+.tabbar a{flex:1 1 0;display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--gray);text-decoration:none;font-size:11px;font-weight:600}
+.tabbar a svg{width:26px;height:26px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.tabbar a[aria-current="page"]{color:var(--blue)}
+#toast{
+  position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(140%);
+  background:var(--ink);color:#fff;padding:11px 18px;border-radius:12px;font-size:13px;max-width:90%;
+  transition:transform .3s ease;box-shadow:0 12px 28px rgba(0,0,0,.22)
+}
+#toast.show{transform:translateX(-50%) translateY(0)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<main class="screen">
+  <header class="header">
+    <div class="mark" aria-hidden="true">
+      <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="512" cy="512" r="470" fill="#FFFFFF"/>
+        <path d="M300 640 A100 100 0 0 1 300 440 A187 110 0 0 1 674 440 A100 100 0 0 1 674 640 Z"
+              fill="none" stroke="#063C7C" stroke-width="34" stroke-linejoin="round" stroke-linecap="round"/>
+        <line x1="196" y1="718" x2="747" y2="303" stroke="#FFFFFF" stroke-width="74" stroke-linecap="round"/>
+        <line x1="196" y1="718" x2="747" y2="303" stroke="#063C7C" stroke-width="34" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div>
+      <h1>Imbituva</h1>
+      <p class="sub">Seu aplicativo, mesmo sem internet.</p>
+    </div>
+  </header>
+
+  <section class="cards">
+    <div class="card">
+      <div class="txt">
+        <h2>Conexão</h2>
+        <p id="netText">Verificando…</p>
+      </div>
+      <span class="dot" id="netDot"></span>
+    </div>
+    <div class="card">
+      <div class="txt">
+        <h2>Modo offline</h2>
+        <p id="swText">Verificando o service worker…</p>
+        <span class="badge" id="cacheInfo"></span>
+      </div>
+      <span class="dot wait" id="swDot"></span>
+    </div>
+  </section>
+
+  <button class="btn" id="install" type="button">Instalar aplicativo</button>
+</main>
+
+<nav class="tabbar" aria-label="Navegação principal">
+  <a href="./" aria-current="page" aria-label="Início">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.6 12 3.2l9 7.4V20a1 1 0 0 1-1 1h-5.2v-6H9.2v6H4a1 1 0 0 1-1-1z"/></svg>
+  </a>
+  <a href="./documentos" aria-label="Arquivos">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h3.9l2 2H19a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+  </a>
+  <a href="./perfil" aria-label="Perfil">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="7.5" r="3.8"/><path d="M20 20.5v-1.2a4.6 4.6 0 0 0-4.6-4.6H8.6A4.6 4.6 0 0 0 4 19.3v1.2"/></svg>
+  </a>
+  <a href="./configuracoes" aria-label="Ajustes">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 13.6a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5v.2a2 2 0 1 1-4 0v-.1a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1h.2a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg>
+  </a>
+</nav>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  var netDot = document.getElementById('netDot');
+  var netText = document.getElementById('netText');
+  var swDot = document.getElementById('swDot');
+  var swText = document.getElementById('swText');
+  var cacheInfo = document.getElementById('cacheInfo');
+  var toast = document.getElementById('toast');
+  var installBtn = document.getElementById('install');
+
+  function setNet(online) {
+    netDot.className = online ? 'dot on' : 'dot';
+    netText.textContent = online
+      ? 'Conectado. Os dados são sincronizados em tempo real.'
+      : 'Sem conexão. O app continua funcionando com os dados salvos.';
+  }
+  window.addEventListener('online', function () { setNet(true); });
+  window.addEventListener('offline', function () { setNet(false); });
+  setNet(navigator.onLine);
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('sw.js').then(function (reg) {
+        swDot.className = 'dot on';
+        swText.textContent = 'Service worker ativo. O app abre offline.';
+        if (reg.active) { cacheInfo.textContent = 'Cache: ' + reg.active.scriptURL.split('/').pop(); }
+      }).catch(function (err) {
+        swDot.className = 'dot';
+        swText.textContent = 'Falha ao registrar o service worker: ' + ((err && err.message) || 'erro');
+      });
+      navigator.serviceWorker.addEventListener('message', function (e) {
+        if (e.data && e.data.type === 'SW_UPDATED') {
+          toast.textContent = 'Nova versão disponível. Reabra o app para atualizar.';
+          toast.classList.add('show');
+        }
+      });
+    });
+  } else {
+    swDot.className = 'dot';
+    swText.textContent = 'Este navegador não suporta service worker.';
+  }
+
+  var deferred = null;
+  window.addEventListener('beforeinstallprompt', function (e) {
+    e.preventDefault();
+    deferred = e;
+    installBtn.classList.add('show');
+  });
+  installBtn.addEventListener('click', function () {
+    if (!deferred) { return; }
+    deferred.prompt();
+    deferred.userChoice.then(function () {
+      deferred = null;
+      installBtn.classList.remove('show');
+    });
+  });
+  window.addEventListener('appinstalled', function () {
+    installBtn.classList.remove('show');
+    toast.textContent = 'Imbituva instalado com sucesso.';
+    toast.classList.add('show');
+  });
+})();
+</script>
+</body>
+</html>

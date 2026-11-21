@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024" role="img" aria-label="Imbituva">
+  <title>Imbituva</title>
+  <circle cx="512" cy="512" r="455" fill="#FFFFFF" stroke="#F0CA77" stroke-width="30"/>
+  <path d="M300 640 A100 100 0 0 1 300 440 A187 110 0 0 1 674 440 A100 100 0 0 1 674 640 Z"
+        fill="none" stroke="#063C7C" stroke-width="34" stroke-linejoin="round" stroke-linecap="round"/>
+  <line x1="196" y1="718" x2="747" y2="303" stroke="#FFFFFF" stroke-width="74" stroke-linecap="round"/>
+  <line x1="196" y1="718" x2="747" y2="303" stroke="#063C7C" stroke-width="34" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,210 @@
+{
+    "project": {
+        "name": "Imbituva",
+        "slug": "imbituva",
+        "base_url": "https://app.imbituva.com",
+        "scope": "/",
+        "start_url": "/",
+        "id": "/",
+        "display": "standalone",
+        "theme_color": "#013A7C",
+        "background_color": "#EFF2F7",
+        "cache_profile": "light",
+        "package_id": "com.imbituva.app",
+        "apk_flavor": "twa",
+        "apk_output": "apk",
+        "apk_signing": "debug",
+        "pwa_manifest_url": "https://app.imbituva.com/manifest.webmanifest"
+    },
+    "generated_at": "2026-11-21T01:41:51+00:00",
+    "cache_name": "pwamaker-v1-ab6e1c",
+    "precache": [
+        "index.html",
+        "offline.html",
+        "manifest.webmanifest",
+        "icons/icon-192.png",
+        "icons/icon-maskable-512.png"
+    ],
+    "validation": {
+        "valid": true,
+        "errors": [],
+        "warnings": [
+            {
+                "code": "apk.debug_signing",
+                "level": "warning",
+                "message": "Keystore de depuração: o artefato não é publicável na Play Store.",
+                "hint": "Use a assinatura de release para distributing o app."
+            }
+        ],
+        "messages": [
+            {
+                "code": "color.theme_background_mismatch",
+                "level": "info",
+                "message": "A theme_color e a background_color têm luminosidades opostas.",
+                "hint": "Isso pode gerar um salto visual ao abrir o app; considere cores mais próximas."
+            },
+            {
+                "code": "icons.count",
+                "level": "info",
+                "message": "17 arquivos de ícone serão gerados (incluindo favicon.ico e favicon.svg).",
+                "hint": ""
+            },
+            {
+                "code": "apk.debug_signing",
+                "level": "warning",
+                "message": "Keystore de depuração: o artefato não é publicável na Play Store.",
+                "hint": "Use a assinatura de release para distributing o app."
+            }
+        ],
+        "counts": {
+            "errors": 0,
+            "warnings": 1
+        }
+    },
+    "apk_validation": {
+        "valid": true,
+        "errors": [],
+        "warnings": [
+            {
+                "code": "apk.debug_signing",
+                "level": "warning",
+                "message": "Keystore de depuração: o artefato não é publicável na Play Store.",
+                "hint": "Use a assinatura de release para distributing o app."
+            }
+        ],
+        "messages": [
+            {
+                "code": "apk.debug_signing",
+                "level": "warning",
+                "message": "Keystore de depuração: o artefato não é publicável na Play Store.",
+                "hint": "Use a assinatura de release para distributing o app."
+            }
+        ],
+        "counts": {
+            "errors": 0,
+            "warnings": 1
+        }
+    },
+    "files": [
+        {
+            "path": "manifest.webmanifest",
+            "size": 2522,
+            "sha256": "aafa5d7695d18b86e29dc2c3b79cfb96f1ee14b1f4866420bbbdce236e1301f3"
+        },
+        {
+            "path": "icons/icon-72.png",
+            "size": 3844,
+            "sha256": "3bbc4f5ea4ff208299744a23e1c42870baf42626c28744605fcd19f288b0305c"
+        },
+        {
+            "path": "icons/icon-96.png",
+            "size": 5144,
+            "sha256": "b2d0a4a962d56021560a5c00b8b391c1a969b5cd235e29ef50b5e60cd9e9b2d2"
+        },
+        {
+            "path": "icons/icon-128.png",
+            "size": 6160,
+            "sha256": "642eabad214b7ee773706c272ab097a41e7cc89a205a6db4ecd7e330bb33baba"
+        },
+        {
+            "path": "icons/icon-144.png",
+            "size": 7840,
+            "sha256": "7683f614c7ca06f503d2dd89f70c6115d0fd221354b463ac46028530474995b0"
+        },
+        {
+            "path": "icons/icon-152.png",
+            "size": 8344,
+            "sha256": "9349e9f6dbd886a29093c630254530753fd9b0fdaa5453b9dfb5aa99e29baa61"
+        },
+        {
+            "path": "icons/icon-192.png",
+            "size": 10357,
+            "sha256": "bc765bc25830ddf36055c1e23f5f59030fb2717e8f172035faa291e45e3425e4"
+        },
+        {
+            "path": "icons/icon-384.png",
+            "size": 18230,
+            "sha256": "e2dc8d10c585cae9f2412bbaed47fbc06bf07865827da060768cc9c2aa4bdae8"
+        },
+        {
+            "path": "icons/icon-512.png",
+            "size": 10940,
+            "sha256": "6179b8340673df1fe7471872d10548a8a2e5a373921b51914492538fb551e19d"
+        },
+        {
+            "path": "icons/icon-maskable-192.png",
+            "size": 8901,
+            "sha256": "d087c9145e56dfcc6d1d36d781fb114623b00c177d4af7243509c79c1499f3f7"
+        },
+        {
+            "path": "icons/icon-maskable-512.png",
+            "size": 23758,
+            "sha256": "71c3dc9121ef9221b9894e95bd0bad9613326e329fd3dcedf85835bc8eb0de94"
+        },
+        {
+            "path": "icons/icon-monochrome-192.png",
+            "size": 1819,
+            "sha256": "2b687d88a68469fa235c06a1be6e2e51879aacca34e2345e630abea4bddd19d8"
+        },
+        {
+            "path": "icons/icon-monochrome-512.png",
+            "size": 4818,
+            "sha256": "00495a85af5d766eb0d0c20cac1222f9b4021226539aeba5914f076908f6ea12"
+        },
+        {
+            "path": "icons/apple-touch-icon.png",
+            "size": 9912,
+            "sha256": "f1787ed9af7973bd38d5b4080b39952db230ea629ef8688d1a7917454ca91241"
+        },
+        {
+            "path": "icons/favicon-16.png",
+            "size": 682,
+            "sha256": "b0fe11e500464d8ed4fff4da69c5868c10b6a56e235cdaaa7c0663ac40c0b458"
+        },
+        {
+            "path": "icons/favicon-32.png",
+            "size": 1432,
+            "sha256": "1ef9c7727c623524d6a4eb8c9c415f880d591b5c6fa0765b5ea393637cf75ed0"
+        },
+        {
+            "path": "icons/favicon.ico",
+            "size": 4652,
+            "sha256": "c538b6b91e50e317f11ab5f0d2edc6b2f8ddc0b1481ad0de6915f05d1d60b73a"
+        },
+        {
+            "path": "icons/favicon.svg",
+            "size": 4646,
+            "sha256": "de8357c12cf68f67085ab56edece366363cd9c7e72c731bbd1f05fb1ac313dc9"
+        },
+        {
+            "path": "index.html",
+            "size": 9036,
+            "sha256": "876cc2cd5ab66d90cb8d49c9cb24756454ffa1c304bf6eba179ec7962af80c80"
+        },
+        {
+            "path": "offline.html",
+            "size": 6977,
+            "sha256": "ee1682f1827ba0e5b9528b9ad70118da5f7dbf4745babf66b7e80f10922f238d"
+        },
+        {
+            "path": "brand/logo.svg",
+            "size": 650,
+            "sha256": "a1db893c31bca549dacfa8784def657ae302f3d20dee2c57768dde0561fa1f78"
+        },
+        {
+            "path": "sw.js",
+            "size": 3912,
+            "sha256": "de2e697d3e0eb8f5da1c59a6f2e85ff2710d603c293c67f036bb94a0688ed4fe"
+        },
+        {
+            "path": ".github/workflows/build-apk.yml",
+            "size": 4693,
+            "sha256": "c0e16676a0b11a16f85afe002d76e6193ec203eab600bdc94f291a42a18743a0"
+        },
+        {
+            "path": "assetlinks.json.example",
+            "size": 1130,
+            "sha256": "fb369a024ffa2ec3d8e0e8ce7013ce9e5ea1761f4d73dd60a67d1b148cbbb98a"
+        }
+    ]
+}

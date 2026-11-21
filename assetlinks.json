@@ -1,0 +1,28 @@
+[
+    {
+        "relation": [
+            "delegate_permission/common.handle_all_urls"
+        ],
+        "target": {
+            "namespace": "android_app",
+            "package_name": "com.imbituva.app",
+            "sha256_cert_fingerprints": [
+                "COLE_AQUI_O_SHA256_BASE64_DO_CERTIFICADO"
+            ]
+        }
+    }
+]
+
+# ---------------------------------------------------------------------------
+# Como usar este arquivo
+# ---------------------------------------------------------------------------
+# 1. Publique este conteúdo (sem as linhas de comentário) em:
+#      https://SEU-DOMINIO/.well-known/assetlinks.json
+# 2. Substitua o placeholder pelo SHA-256 do certificado de assinatura:
+#      keytool -printcert -jarfile app-release.apk | openssl sha256 -binary | openssl base64 -A
+#    O próprio workflow de build gera o assetlinks.json final com o
+#    fingerprint correto e o publica como artefato.
+# 3. O packageName deve ser o mesmo do packageId do Android:
+#      com.imbituva.app
+# 4. O domínio do assetlinks.json precisa ser exatamente o domínio da PWA
+#    (https://https://app.imbituva.com).

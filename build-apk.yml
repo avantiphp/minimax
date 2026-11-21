@@ -1,0 +1,125 @@
+name: Build APK
+
+on:
+  workflow_dispatch:
+    inputs:
+      output_type:
+        description: 'Tipo de artefato (apk | aab)'
+        type: choice
+        options: [apk, aab]
+        default: 'apk'
+      version_code:
+        description: 'versionCode do Android'
+        type: string
+        default: '1'
+      signing:
+        description: 'Assinatura (debug | release)'
+        type: choice
+        options: [debug, release]
+        default: 'debug'
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+env:
+  PACKAGE_ID: 'com.imbituva.app'
+  PWA_MANIFEST_URL: 'https://app.imbituva.com/manifest.webmanifest'
+  APP_NAME: 'Imbituva'
+  SHORT_NAME: 'Imbituva'
+  OUTPUT_TYPE: 'apk'
+  SIGNING: 'debug'
+
+jobs:
+  build:
+    name: Build TWA
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Verifica disponibilidade da PWA
+        run: |
+          set -euo pipefail
+          test -n "$PWA_MANIFEST_URL" || { echo "PWA_MANIFEST_URL vazio"; exit 1; }
+          curl -fsSL --retry 3 --retry-delay 2 "$PWA_MANIFEST_URL" -o /tmp/manifest.json
+          echo "Manifesto acessivel: $(wc -c < /tmp/manifest.json) bytes"
+
+      - name: Gera keystore temporaria (debug)
+        run: |
+          set -euo pipefail
+          keytool -genkeypair -v \
+            -keystore release.keystore \
+            -alias debug-key \
+            -keyalg RSA -keysize 2048 -validity 10000 \
+            -storepass android -keypass android \
+            -dname "CN=PWA Maker Debug, OU=Debug, O=Debug, L=, ST=, C=BR"
+          chmod 600 release.keystore
+          echo "ANDROID_KEY_ALIAS=debug-key" >> "$GITHUB_ENV"
+          echo "::warning::APK assinado com chave de depuracao - nao publicavel na Play Store"
+
+      - name: Build (Bubblewrap / TWA)
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          # Gera/atualiza o projeto Android a partir do manifesto publicado.
+          docker run --rm -v "$PWD:/work" -w /work \
+            bubblesphere/bubblewrap update \
+              --manifest "$PWA_MANIFEST_URL" \
+              --packageId "$PACKAGE_ID" \
+              --skipPwaValidation \
+          || docker run --rm -v "$PWD:/work" -w /work \
+            bubblesphere/bubblewrap init \
+              --manifest "$PWA_MANIFEST_URL" \
+              --packageId "$PACKAGE_ID"
+
+          # Compila e assina o artefato.
+          docker run --rm -v "$PWD:/work" -w /work \
+            -e BUBBLEWRAP_KEYSTORE_PASSWORD="${KEYSTORE_PASSWORD:-android}" \
+            -e BUBBLEWRAP_KEY_PASSWORD="${KEY_PASSWORD:-android}" \
+            bubblesphere/bubblewrap build \
+              --signingKeyPath /work/release.keystore \
+              --signingKeyAlias "${ANDROID_KEY_ALIAS:-debug-key}" \
+              --signingKeyPassword "${KEY_PASSWORD:-android}"
+
+          mkdir -p output
+          if [ "$OUTPUT_TYPE" = "aab" ]; then
+            find . -name '*.aab' -exec cp {} output/ \; || true
+          else
+            find . -name '*release*.apk' -exec cp {} output/ \; || true
+          fi
+          ls -la output/
+
+      - name: Calcula o Digital Asset Links
+        run: |
+          set -euo pipefail
+          mkdir -p output
+          APK=$(find output -name '*.apk' | head -n 1 || true)
+          if [ -n "$APK" ]; then
+            FINGERPRINT=$(keytool -printcert -jarfile "$APK" | openssl sha256 -binary | openssl base64 -A)
+            printf '[{"relation":["delegate_permission/common.handle_all_urls"],"target":{"namespace":"android_app","package_name":"%s","sha256_cert_fingerprints":["%s"]}}]\n' \
+              "$PACKAGE_ID" "$FINGERPRINT" > output/assetlinks.json
+            echo "assetlinks.json gerado com o fingerprint $FINGERPRINT"
+          else
+            printf '[{"relation":["delegate_permission/common.handle_all_urls"],"target":{"namespace":"android_app","package_name":"%s","sha256_cert_fingerprints":["COLE_AQUI_O_SHA256_DO_CERTIFICADO"]}}]\n' \
+              "$PACKAGE_ID" > output/assetlinks.json
+            echo "::warning::APK nao encontrado; assetlinks.json gerado com placeholder"
+          fi
+
+      - name: Upload do artefato
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-${{ github.ref_name }}
+          path: output/
+          retention-days: 30
+          if-no-files-found: error
